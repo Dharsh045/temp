@@ -1,0 +1,70 @@
+.attendance-container {
+    width: 60%; /* Increased width for better layout */
+    margin: 40px auto; /* Added more margin for spacing */
+    text-align: center;
+    padding: 20px; /* Added padding inside the container */
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px; /* Adds space between table and filters */
+  }
+  
+  th, td {
+    border: 1px solid #ddd;
+    padding: 12px; /* Slightly increased padding for better readability */
+  }
+  .header {
+    display: flex;
+    justify-content: flex-start;
+    padding: 10px;
+    background-color: #f8f9fa;
+  }
+  
+  .back-button {
+    background-color: #ffffff;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+  }
+  
+  .back-button:hover {
+    background-color: #0056b3;
+  }
+  
+  th {
+    background-color: #4CAF50;
+    color: white;
+    padding: 14px; /* More padding for header */
+  }
+  
+  /* Filters Section */
+  .filter-options {
+    display: flex;
+    align-items: center;
+    justify-content: center; /* Centers the filters */
+    gap: 40px; /* Increased space between department and year dropdowns */
+    margin-bottom: 20px; /* Added space below filters */
+  }
+  
+  /* Additional Space for Dropdowns */
+  .dropdown-space {
+    width: 40px; /* Increased spacing for better separation */
+  }
+  
+  /* Adds space between rows */
+  tr {
+    height: 50px;
+  }
+  
+  /* Adds space between inputs or buttons */
+  .filter-options select, 
+  .filter-options button {
+    padding: 10px;
+    font-size: 16px;
+  }
+  

@@ -1,0 +1,23 @@
+body {
+    font-family: Arial, sans-serif;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f0f0f0;
+}
+
+.form-container {
+    position: relative;
+    top: 100px;
+    left: 50%;
+    transform: translateX(-50%); /* Centering horizontally */
+    background-color: white;
+    padding: 20px 4% 20px 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 400px;
+}
+
+h1 {
+    text-align: center;
+}

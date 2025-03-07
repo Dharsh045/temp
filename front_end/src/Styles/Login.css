@@ -1,0 +1,95 @@
+/* Background */
+
+  
+  /* Centered Login Box */
+  .login-container {
+    display: flex;
+    font-family: Arial, sans-serif;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: linear-gradient(to right, #141E30, #243B55) ;
+  }
+  
+  .login-box {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 40px;
+    border-radius: 10px;
+    text-align: center;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+  }
+  
+  /* User Icon */
+  .avatar {
+    background: #ffffff;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    margin: 0 auto 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .user-icon {
+    width: 40px;
+    height: 40px;
+    background: url('https://cdn-icons-png.flaticon.com/512/149/149071.png') no-repeat center;
+    background-size: cover;
+  }
+  
+  /* Input Fields */
+  .input-group {
+    display: flex;
+    align-items: center;
+    background: white;
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+  }
+  
+  .input-group input {
+    border: none;
+    outline: none;
+    flex: 1;
+    font-size: 16px;
+    color: black; /* ✅ Text visible in input fields */
+  }
+  
+  .icon {
+    margin-right: 10px;
+    font-size: 18px;
+  }
+  
+  /* Options (Remember me, Forgot Password) */
+  .options {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    color: white;
+    margin-bottom: 15px;
+  }
+  
+  .forgot-password {
+    cursor: pointer; /* ✅ Makes "Forgot Password" clickable */
+    text-decoration: underline;
+    color: #ffffff;
+  }
+ 
+  /* Button */
+  .login-btn {
+    background: #000C40;
+    color: white;
+    padding: 10px;
+    width: 100%;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 18px;
+  }
+  
+  .login-btn:hover {
+    background: #141E30;
+  }
+  
