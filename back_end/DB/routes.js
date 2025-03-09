@@ -28,6 +28,38 @@ router.post('/users/add', async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+router.delete("/events/:eventId", async (req, res) => {
+  try {
+    const eventId = parseInt(req.params.eventId, 10);
+    console.log("Received DELETE request for event ID:", eventId);
+
+    // Find the event cluster that contains the event
+    const eventCluster = await EventCluster.findOne({ "events.event_id": eventId });
+
+    if (!eventCluster) {
+      return res.status(404).json({ message: "Event not found" });
+    }
+
+    // Filter out the event to delete
+    eventCluster.events = eventCluster.events.filter(event => event.event_id !== eventId);
+
+    // Save updated event cluster
+    await eventCluster.save();
+
+    // Also remove this event from all students' `events_participated` list
+    await StudentCluster.updateMany(
+      { "students.events_participated": eventId },
+      { $pull: { "students.$.events_participated": eventId } }
+    );
+
+    res.json({ message: "Event deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting event:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+
 
 // Route to fetch all users
 router.get('/users', async (req, res) => {
@@ -37,6 +69,29 @@ router.get('/users', async (req, res) => {
     res.json(userCluster.users);
   } catch (error) {
     console.error('Error fetching users:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+router.get("/attendance/:eventId", async (req, res) => {
+  try {
+    const eventId = parseInt(req.params.eventId);
+    console.log("Fetching attendance for event:", eventId);
+
+    const eventCluster = await EventCluster.findOne({ "events.event_id": eventId });
+
+    if (!eventCluster) {
+      console.log("❌ Event not found in database");
+      return res.status(404).json({ message: "Event not found" });
+    }
+
+    const event = eventCluster.events.find(event => event.event_id === eventId);
+    
+    console.log("✅ Event data:", event);
+    console.log("✅ Attendance:", event?.participants || []);
+
+    res.json({ attendance: event?.participants || [] });
+  } catch (error) {
+    console.error("❌ Error fetching attendance:", error);
     res.status(500).json({ error: error.message });
   }
 });
@@ -125,40 +180,51 @@ router.get('/events', async (req, res) => {
 router.post("/update-attendance", async (req, res) => {
   try {
     const { eventId, rollNumbers } = req.body;
-    console.log("Event id :",eventId,"rollNumber :" ,rollNumbers);
+    console.log("Updating event attendance:", { eventId, rollNumbers });
 
-    // Find the event using event_id
+    // Find the event cluster containing the event
     const eventCluster = await EventCluster.findOne({ "events.event_id": eventId });
+
     if (!eventCluster) {
       return res.status(404).json({ message: "Event not found" });
     }
 
-    // Find the event object in the cluster
+    // Find the event index
     const eventIndex = eventCluster.events.findIndex(event => event.event_id === eventId);
-    const event = eventCluster.events[eventIndex];
-    if (!event) {
+    if (eventIndex === -1) {
       return res.status(404).json({ message: "Event not found in cluster" });
     }
 
-    // Add roll numbers to event's participants
-    event.participants = [...new Set([...event.participants, ...rollNumbers])];
-
-    // Save updated event cluster
+    // Update event participants
+    eventCluster.events[eventIndex].participants = rollNumbers;
     await eventCluster.save();
 
-    // Update students' events_participated array
+    // Remove event from all students first (ensure no duplicates)
+    await StudentCluster.updateMany(
+      { "students.events_participated": eventId },
+      { $pull: { "students.$[].events_participated": eventId } } // 🔥 Fix: Ensure all students are updated
+    );
+
+    // 🔥 Correctly update each student's `events_participated`
     await StudentCluster.updateMany(
       { "students.roll_no": { $in: rollNumbers } },
-      { $addToSet: { "students.$.events_participated": eventId } } // ✅ Only updates matched students
+      { $addToSet: { "students.$[elem].events_participated": eventId } },
+      { arrayFilters: [{ "elem.roll_no": { $in: rollNumbers } }] } // ✅ Target correct student
     );
-    
 
-    res.json({ message: "Attendance updated successfully!" });
+    // Fetch the updated event data
+    const updatedEvent = eventCluster.events[eventIndex];
+
+    res.json({
+      message: "Attendance updated successfully!",
+      updatedEvent, // 🔥 Return updated event details
+    });
   } catch (error) {
     console.error("Error updating attendance:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 });
+
 
 router.get("/events/:eventId", async (req, res) => {
   try {

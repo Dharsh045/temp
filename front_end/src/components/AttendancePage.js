@@ -75,16 +75,40 @@ const AttendancePage = () => {
     setNewRollNumber("");
   };
 
-  const handleRemove = (index) => {
-    setAttendanceList(attendanceList.filter((_, i) => i !== index));
+  const handleRemove = async (index) => {
+    const updatedList = attendanceList.filter((_, i) => i !== index);
+    setAttendanceList(updatedList);
+  
+    try {
+      const response = await fetch("http://localhost:5000/api/update-attendance", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          eventId: numericEventId,
+          rollNumbers: updatedList,
+        }),
+        credentials: "include",
+      });
+  
+      if (response.ok) {
+        alert("Attendance updated successfully!");
+      } else {
+        alert("Error updating attendance.");
+      }
+    } catch (error) {
+      console.error("Error updating attendance:", error);
+      alert("Failed to update attendance.");
+    }
   };
-
+  
   const handleEdit = (index) => {
     setEditingIndex(index);
     setEditRollNumber(attendanceList[index]);
   };
 
-  const handleSaveEdit = (index) => {
+  const handleSaveEdit = async (index) => {
     const trimmedRoll = editRollNumber.trim();
     if (!trimmedRoll) {
       alert("Roll number cannot be empty!");
@@ -94,11 +118,37 @@ const AttendancePage = () => {
       alert("Duplicate roll number detected!");
       return;
     }
+  
     const updatedList = [...attendanceList];
     updatedList[index] = trimmedRoll;
     setAttendanceList(updatedList);
+  
+    try {
+      const response = await fetch("http://localhost:5000/api/update-attendance", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          eventId: numericEventId,
+          rollNumbers: updatedList,
+        }),
+        credentials: "include",
+      });
+  
+      if (response.ok) {
+        alert("Updated successfully!");
+      } else {
+        alert("Error updating attendance.");
+      }
+    } catch (error) {
+      console.error("Error updating attendance:", error);
+      alert("Failed to update attendance.");
+    }
+  
     setEditingIndex(null);
   };
+  
 
   const handleUpdateAll = async () => {
     try {

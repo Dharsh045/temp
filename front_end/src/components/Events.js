@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "../Styles/Events.css";
 import { Link } from "react-router-dom";
-
-// Default event image
-import SwacchthaImg from "../Photos/Swacchtha.jpg";
+import SwacchthaImg from "../Photos/Swacchtha.jpg"; // Default Image
 
 const Events = () => {
   const [eventsData, setEventsData] = useState([]);
@@ -43,16 +41,17 @@ const Events = () => {
       event_name: newEventName,
       event_hours: newEventHours,
       event_date: newEventDate,
-      start_time: newEventStartTime
+      start_time: newEventStartTime,
+      image: base64Image,
     };
 
     try {
       const response = await fetch("http://localhost:5000/api/events/create", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(eventData)
+        body: JSON.stringify(eventData),
       });
 
       if (!response.ok) {
@@ -66,7 +65,7 @@ const Events = () => {
         event_hours: newEventHours,
         event_date: newEventDate,
         start_time: newEventStartTime,
-        image: base64Image
+        image: base64Image,
       };
 
       setEventsData([...eventsData, newEvent]);
@@ -81,6 +80,29 @@ const Events = () => {
       alert("Failed to create event. Please try again.");
     }
   };
+
+  const handleRemoveEvent = async (eventId) => {
+    console.log("Deleting event with ID:", eventId); // Debugging
+  
+    const confirmDelete = window.confirm("Are you sure you want to delete this event?");
+    if (!confirmDelete) return;
+  
+    try {
+      const response = await fetch(`http://127.0.0.1:5000/api/events/${eventId}`, { 
+        method: "DELETE",
+      });
+  
+      if (!response.ok) {
+        throw new Error("Failed to delete event");
+      }
+  
+      setEventsData(eventsData.filter((event) => event.event_id !== eventId));
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Failed to delete event.");
+    }
+  };
+  
 
   return (
     <div className="events-container">
@@ -100,27 +122,24 @@ const Events = () => {
       )}
 
       <div className="events-list">
-      {eventsData.map((event) => {
-  console.log("Event ID being passed:", event.event_id, "Type:", typeof event.event_id); // Debugging log
-  return (
-    <div key={event.event_id} className="event-item">
-      <div className="event-image">
-        <img src={SwacchthaImg} alt={event.event_name} />
-      </div>
-      <div className="event-details">
-        <h2 className="event-name">{event.event_name}</h2>
-        <p><strong>Hours:</strong> {event.event_hours} hrs</p>
-        <p><strong>Date:</strong> {event.event_date}</p>
-        <p><strong>Start Time:</strong> {event.start_time}</p>
-        <div className="event-actions">
-        <Link to={`/attendance/${Number(event.event_id)}`}>Attendance</Link>
-          <a href="#">Coordinator</a>
-        </div>
-      </div>
-    </div>
-  );
-})}
-
+        {eventsData.map((event) => (
+          <div key={event.event_id} className="event-item">
+            <div className="event-image">
+              <img src={event.image || SwacchthaImg} alt={event.event_name} />
+            </div>
+            <div className="event-details">
+              <h2 className="event-name">{event.event_name}</h2>
+              <p><strong>Hours:</strong> {event.event_hours} hrs</p>
+              <p><strong>Date:</strong> {event.event_date}</p>
+              <p><strong>Start Time:</strong> {event.start_time}</p>
+              <div className="event-actions">
+                <Link to={`/attendance/${event.event_id}`}>Attendance</Link>
+                <a href="#">Coordinator</a>
+                <button className="remove-event-btn" onClick={() => handleRemoveEvent(event.event_id)}>Remove</button>
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );
