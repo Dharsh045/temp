@@ -19,7 +19,7 @@ const Attendance = () => {
 
     useEffect(() => {
         fetchAttendance();
-    }, []); // ✅ Run only once when page loads
+    }, []);
     
     useEffect(() => {
         const handleAttendanceUpdate = () => {
